@@ -1,2 +1,0 @@
-# softray
-Inventory software - java
