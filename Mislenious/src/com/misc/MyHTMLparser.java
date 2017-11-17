@@ -19,12 +19,17 @@ public class MyHTMLparser {
 		e.printStackTrace();
 	}
 
-	Elements content = doc.getElementsByClass("CoreCount");
+	Elements content = doc.getElementsByClass("specs-list");
+	//Elements links = content.className("span");
+	System.out.println(doc.title());
 	//Elements links =  content.getElementsByTag("span");
+	//System.out.println(content.attr("span"));
+	//System.out.println(content.text());
 	for (Element link : content) {
-	  String linkHref = link.attr("span");
-	  String linkText = link.text();
-	  System.out.println(linkText);
+		System.out.println("MYTAG"+link.tagName("span").text());
+		//System.out.println("MYTAG"+ linkText);
+	  //String linkText = link.text();
+	  //System.out.println(linkText);
 	}
 	
 	}
