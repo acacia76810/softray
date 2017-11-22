@@ -2,6 +2,8 @@ package com.misc;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,22 +17,28 @@ public class MyHTMLparser {
 	try {
 		doc = Jsoup.parse(input, "UTF-8", "https://ark.intel.com/products/126686/Intel-Core-i7-8700-Processor-12M-Cache-up-to-4_60-GHz");
 	} catch (Exception e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
-
-	Elements content = doc.getElementsByClass("specs-list");
-	//Elements links = content.className("span");
-	System.out.println(doc.title());
-	//Elements links =  content.getElementsByTag("span");
-	//System.out.println(content.attr("span"));
-	//System.out.println(content.text());
-	for (Element link : content) {
-		System.out.println("MYTAG"+link.tagName("span").text());
-		//System.out.println("MYTAG"+ linkText);
-	  //String linkText = link.text();
-	  //System.out.println(linkText);
+	int mycounter=0;
+	
+	Elements specsList=doc.getElementsByClass("specs-list");
+	
+	HashMap<String,String> processordDetails =new HashMap<String,String>();
+	for (Element link : specsList.select("li")) {
+		//processordDetails.put(name.tagName("span").text(), value.tagName("span").text());
+		String name_=link.select("a.view-modal span").text();
+		System.out.println("Name:"+name_);
+		String value_=link.select(".value span").text();
+		System.out.println("Value:"+value_);	
+		processordDetails.put(name_, value_);
+			
+		mycounter++;
 	}
 	
+ 	for(Entry<String, String> m:processordDetails.entrySet()){  
+	   System.out.println(m.getKey()+" "+m.getValue());  
+ 	}
+	System.out.println("Count :"+mycounter);
 	}
 }
