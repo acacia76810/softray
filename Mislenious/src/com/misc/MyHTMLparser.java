@@ -27,18 +27,20 @@ public class MyHTMLparser {
 	HashMap<String,String> processordDetails =new HashMap<String,String>();
 	for (Element link : specsList.select("li")) {
 		//processordDetails.put(name.tagName("span").text(), value.tagName("span").text());
-		String name_=link.select("a.view-modal span").text();
+		String name_=link.select(".label span").text();
 		System.out.println("Name:"+name_);
 		String value_=link.select(".value span").text();
 		System.out.println("Value:"+value_);	
 		processordDetails.put(name_, value_);
-			
+		System.out.println("CLASS : "+link.className());
 		mycounter++;
+		System.out.println("**************************************");
 	}
 	
  	for(Entry<String, String> m:processordDetails.entrySet()){  
-	   System.out.println(m.getKey()+" "+m.getValue());  
+	   System.out.println(m.getKey()+" \t\t"+m.getValue());  
  	}
 	System.out.println("Count :"+mycounter);
+	System.out.println("Map:"+processordDetails.size());
 	}
 }
