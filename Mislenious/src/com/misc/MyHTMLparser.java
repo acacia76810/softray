@@ -2,6 +2,7 @@ package com.misc;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -12,10 +13,11 @@ import org.jsoup.select.Elements;
 
 public class MyHTMLparser {
 	public static void main(String args[]) throws IOException{
-	File input = new File("D:\\testou2t.txt");
+	
 	Document doc = null;
 	try {
-		doc = Jsoup.parse(input, "UTF-8", "https://ark.intel.com/products/126686/Intel-Core-i7-8700-Processor-12M-Cache-up-to-4_60-GHz");
+		//doc = Jsoup.parse(URLdata);
+		doc = Jsoup.connect("https://ark.intel.com/products/126686/Intel-Core-i7-8700-Processor-12M-Cache-up-to-4_60-GHz").get();
 	} catch (Exception e) {
 		
 		e.printStackTrace();
@@ -38,7 +40,7 @@ public class MyHTMLparser {
 	}
 	
  	for(Entry<String, String> m:processordDetails.entrySet()){  
-	   System.out.println(m.getKey()+" \t\t"+m.getValue());  
+	   System.out.println(m.getKey()+" : "+m.getValue());  
  	}
 	System.out.println("Count :"+mycounter);
 	System.out.println("Map:"+processordDetails.size());
