@@ -1,8 +1,6 @@
 package com.misc;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -17,7 +15,7 @@ public class MyHTMLparser {
 	Document doc = null;
 	try {
 		//doc = Jsoup.parse(URLdata);
-		doc = Jsoup.connect("https://ark.intel.com/products/126686/Intel-Core-i7-8700-Processor-12M-Cache-up-to-4_60-GHz").get();
+		doc = Jsoup.connect("https://ark.intel.com/products/124967/Intel-Core-i5-8250U-Processor-6M-Cache-up-to-3_40-GHz").get();
 	} catch (Exception e) {
 		
 		e.printStackTrace();
