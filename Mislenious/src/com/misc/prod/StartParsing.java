@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 public class StartParsing {
 	public static void main(String args[]) throws SQLException{
-		/*Scanner keyboard = new Scanner(System.in);
+		Scanner keyboard = new Scanner(System.in);
 		System.out.println("Intel processor parsing program.");
 		System.out.println("Enter the URL:");
 		String myint = keyboard.next();
@@ -17,14 +17,24 @@ public class StartParsing {
 		for(Entry<String, String> m:processorDetails.entrySet()){  
 			   System.out.println(m.getKey()+" : "+m.getValue());  
 		 	}
-		/*System.out.println("Save to DB (Y/N):");
-		String dbSave = keyboard.next();
-		if(dbSave.equalsIgnoreCase("y")){
-			
-		}*/
+		
 		myPostgresConn pgConn =new myPostgresConn();
-		pgConn.connect();
+		
+		
+		Integer counter=0;
+		System.out.println("Save to DB (Y/N):");
+		String dbSave = keyboard.next();
+		pgConn.insertIntoDB(processorDetails);
+		/*if(dbSave.equalsIgnoreCase("y")){
+			for(Entry<String, String> m:processorDetails.entrySet()){ 
+				pgConn.connect();
+				pgConn.insertProcessorDetails(counter.toString(),m.getKey().toString(),m.getValue().toString()); 
+				counter++;
+			 	}
+			//pgConn.insertProcessorDetails("520","7200","best234");
+		}*/
+		System.out.println("Sucess");
 		//pgConn.testQuery();
-		System.out.println(pgConn.insertProcessorDetails("520","7200","best234"));
+		//System.out.println(pgConn.insertProcessorDetails("520","7200","best234"));
 	}
 }

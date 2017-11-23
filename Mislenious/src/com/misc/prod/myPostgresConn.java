@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class myPostgresConn {
 	private final String url = "jdbc:postgresql://localhost:5432/amit";
@@ -41,12 +43,12 @@ public class myPostgresConn {
     	st.close();
 		return null;
     }
-    public String insertProcessorDetails(String id, String name, String value) throws SQLException{
+    public void insertProcessorDetails(String id, String name, String value) throws SQLException{
     	System.out.println(id +" - "+name+" - "+value);
     	
     	Statement st = conn.createStatement();
     	//String quote=;
-    	ResultSet rs = st.executeQuery("INSERT INTO intelprocessordetails(id, name, value)VALUES ("+id+", "+name+", "+value+");");
+    	ResultSet rs = st.executeQuery("INSERT INTO intelprocessordetails(id, name, value)VALUES ('"+id+"', '"+name+"', '"+value+"');");
     			//INSERT INTO public.IntelProcessorDetails(id, name, value)VALUES ("+id+", "+name+", "+value);
     	while (rs.next())
     	{
@@ -55,14 +57,34 @@ public class myPostgresConn {
     	}
     	rs.close();
     	st.close();
-    	return "true";
+    	//return "true";
+    }
+    public void insertIntoDB(HashMap<String,String> mp) throws SQLException{
+
+    	
+    	Statement st = conn.createStatement();
+    	ResultSet rs=null;
+    	for(Entry<String, String> m:mp.entrySet()){ 
+    		String name=m.getKey().toString();
+    		String value=m.getValue().toString();
+    		 rs = st.executeQuery("INSERT INTO intelprocessordetails(id, name, value)VALUES (,"+name+", '"+value+"');");
+			//pgConn.insertProcessorDetails(m.getKey().toString(),m.getValue().toString()); 
+		
+		 	}
+    	
+    	
+    	
+    			
+    	
+    	rs.close();
+    	st.close();
     }
     
     public static void main(String[] args) throws SQLException {
     	myPostgresConn app = new myPostgresConn();
         app.connect();
         //app.testQuery();
-    	System.out.println(app.insertProcessorDetails("e520", "e7200", "best"));
+    	//System.out.println(app.insertProcessorDetails("e520", "e7200", "best"));
     	//System.out.println(app.testQuery());
     }
 }
