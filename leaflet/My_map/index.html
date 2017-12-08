@@ -3,17 +3,20 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>My map</title>
+<script src="lib/jquery-3.2.1.min.js"></script>
 <link rel="stylesheet" href="lib/leaflet.css"/>
 <script src="lib/leaflet.js"></script>
 <script src="data/mapdata.geojson"></script>
 <style type="text/css" >
-#map{height:700px;width: 100%;}
-
+#map{height:680px;width: 100%;}
+/*#VMSMarkerDiv{visibility: hidden;}*/
 
 </style>
 </head>
 <body>
-<h1>My Map</h1>
+<h1>My Map</h1><h3>Long: <span id="labelLong"></span>&nbsp;&nbsp;&nbsp;&nbsp;Lati: <span id="labelLati"></span></h3><br>
+<span><input type="checkbox" id="AddMarker">Add Marker</input></span>
+<span id="VMSMarkerDiv"  ><input type="checkbox" id="VMSMarker">Mark as VMS</input></span>
 <script>
 function countriesStyle(feature){
   return{
@@ -33,7 +36,7 @@ var countriesLayer=L.geoJson(
   mapdata,
 {style:countriesStyle}
 ).addTo(map);
-var latlngs = [
+/*var latlngs = [
     [[45.51, -122.68],
      [37.77, -122.43],
      [34.04, -118.2]],
@@ -43,7 +46,44 @@ var latlngs = [
 ];
 var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
 // zoom the map to the polyline
-map.fitBounds(polyline.getBounds());
+map.fitBounds(polyline.getBounds());*/
+//L.marker([50.5, 30.5]).addTo(map);
+
+
+  map.on('click', function(e) {
+    var CheckAddMarker=$("#AddMarker").prop("checked");
+    console.log(CheckAddMarker);
+      if(CheckAddMarker){
+          var CurrLat=e.latlng.lat,
+          Currlong=e.latlng.lng;
+          console.log("Lat, Lon : " + CurrLat + ", " + Currlong)
+          var myMarker=L.marker([CurrLat, Currlong])
+
+          myMarker.bindPopup("<p>Lat:"+ CurrLat +"<br>Lon: "+Currlong+"</p>");
+          myMarker.addTo(map);
+          $("#labelLong").html(Currlong);
+          $("#labelLati").html(CurrLat);
+
+          $("#AddMarker").prop("checked",false);
+      }
+
+
+});
+$(document).ready(function(){
+  $('#AddMarker').click(function(){
+  $('#AddMarker').prop("checked",function(){
+    if(!$('#AddMarker').prop("checked")){
+      console.log("Enter");
+      $('#VMSMarkerDiv').hide();
+    }else {
+      $('#VMSMarkerDiv').show();
+    }
+    //$('#VMSMarkerDiv').toggle("display");
+  });
+});
+});
+
+
 </script>
 </body>
 </html>
