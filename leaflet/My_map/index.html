@@ -8,15 +8,48 @@
 <script src="lib/leaflet.js"></script>
 <script src="data/mapdata.geojson"></script>
 <style type="text/css" >
-#map{height:680px;width: 100%;}
+#map{height:550px;width: 100%;}
+#MarkerControl{float:right;width:460px;}
+#markerControl [type="radio"]{//display:block;}
+#markerControl [type="text"]{float:right;}
+#markerControl [type="button"]{margin-left: auto;margin-right: auto;}
+#HeaderInfo,#HeaderInfo h1,#HeaderInfo h3{width: 50%; display: inline-block !important;}
+#MarkerTbl{border-spacing:  0px;}
+/*#AtPosMarker input[type="text"]{di}*/
 /*#VMSMarkerDiv{visibility: hidden;}*/
 
 </style>
 </head>
 <body>
-<h1>My Map</h1><h3>Long: <span id="labelLong"></span>&nbsp;&nbsp;&nbsp;&nbsp;Lati: <span id="labelLati"></span></h3><br>
-<span><input type="checkbox" id="AddMarker">Add Marker</input></span>
-<span id="VMSMarkerDiv"  ><input type="checkbox" id="VMSMarker">Mark as VMS</input></span>
+<div id="HeaderInfo">
+<h1>My Map</h1>
+<h3>Lati: <span id="labelLati"></span><br>
+  Long: <span id="labelLong"></span></h3><br>
+</div>
+<span id="MarkerControl">
+
+<table id="MarkerTbl" border="1px">
+  <tr>
+    <td><input type="radio" name="layer"id="AddLayer">Add Layer</input>
+      <input type="text" id="LayerShape" size="1" value="4"/>
+  <td><input type="radio" name="maker"id="AddMarker">Add Marker</input><br>
+</tr><tr>
+  <td>
+  <td><input type="radio" name="maker" id="VMSMarker">VMS Marker</input><br>
+</tr><tr>
+  <td>
+  <td><input type="radio" name="maker" id="AtPosMarker">Marker at position<br>
+    Latitude : <input type="text" id="POSLati" disabled="disabled"><br><br>
+    Longitude : <input type="text" id="POSLong"disabled="disabled"><br>
+    <input type="button" value="Add to map" disabled="disabled" id="PosMarkerBtn"/>
+  </tr><tr>
+
+      <td>
+    <td>
+  <input type="button" id="clearBtn" value="CLEAR">
+</tr>
+</table>
+</span>
 <script>
 function countriesStyle(feature){
   return{
@@ -32,55 +65,146 @@ function countriesStyle(feature){
 <div id="map"></div>
 <script>
 var map =L.map('map').setView([19.803794,72.745998],6); //19.803794,72.745998//43.8476,18.3564
-var countriesLayer=L.geoJson(
-  mapdata,
-{style:countriesStyle}
-).addTo(map);
-/*var latlngs = [
-    [[45.51, -122.68],
-     [37.77, -122.43],
-     [34.04, -118.2]],
-    [[40.78, -73.91],
-     [41.83, -87.62],
-     [32.76, -96.72]]
-];
-var polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
-// zoom the map to the polyline
-map.fitBounds(polyline.getBounds());*/
-//L.marker([50.5, 30.5]).addTo(map);
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+map.on('mousemove',function(e){
+var num=0;
+  //console.log(num++);
+  $("#labelLong").html(e.latlng.lng);
+  $("#labelLati").html(e.latlng.lat);
+});
+
+// GLOBAL VARIABLE DECLERATION
+var LayerCorner=$("#LayerShape").val();
+  var corner=[];
+  var vertices=[];
 
 
   map.on('click', function(e) {
     var CheckAddMarker=$("#AddMarker").prop("checked");
-    console.log(CheckAddMarker);
+    var CheckVMSMarker=$("#VMSMarker").prop("checked");
+    var POSMarker=$("#AtPosMarker").prop("checked");
+    var ADDLayer=$("#AddLayer").prop("checked");
+
+    //console.log(CheckAddMarker);
+    var CurrLat=e.latlng.lat,
+    Currlong=e.latlng.lng;
       if(CheckAddMarker){
-          var CurrLat=e.latlng.lat,
-          Currlong=e.latlng.lng;
-          console.log("Lat, Lon : " + CurrLat + ", " + Currlong)
-          var myMarker=L.marker([CurrLat, Currlong])
+
+          //console.log("Lat, Lon : " + CurrLat + ", " + Currlong)
+          var myMarker=L.marker([CurrLat, Currlong]);
 
           myMarker.bindPopup("<p>Lat:"+ CurrLat +"<br>Lon: "+Currlong+"</p>");
           myMarker.addTo(map);
-          $("#labelLong").html(Currlong);
-          $("#labelLati").html(CurrLat);
-
           $("#AddMarker").prop("checked",false);
+
+      }else if (CheckVMSMarker) {
+        //console.log("VMSMarker");
+        var VMSicon=L.icon({
+          iconUrl:"lib/images/leddisplay-icon-150x150.png",
+          iconSize:[40,40]
+        });
+        var VMSMarker=L.marker([CurrLat, Currlong],{icon:VMSicon});
+        VMSMarker.bindPopup("<p>Lat:"+ CurrLat +"<br>Lon: "+Currlong+"</p>");
+        VMSMarker.addTo(map);
+        $("#VMSMarker").prop("checked",false);
+      }
+      else if (ADDLayer) {
+        if(LayerCorner>0){
+          corner=[CurrLat,Currlong];
+          vertices.push(corner);
+          LayerCorner--;
+          console.log(LayerCorner);
+          if(LayerCorner==0){
+                var polygon = L.polygon(vertices, {color: 'red'}).addTo(map);
+                map.fitBounds(polygon.getBounds());
+          }
+        }
+        console.log("Lenght: "+corner.length+"\n curent POS:"+corner.toString()+"\n ARRAY : "+vertices+"value  : "+LayerCorner);
       }
 
 
+
 });
+
+function EnablePOS(){
+  $("input[type='text']").removeAttr("disabled");
+  $("#PosMarkerBtn").removeAttr("disabled");
+  //console.log("ENABLE excuted");
+}
+function DisablePOS(){
+  $("input[type='text']").attr("disabled", "disabled");
+  $("#PosMarkerBtn").attr("disabled", "disabled");
+}
+function CLEARText(){
+  $('input[type="text"]').val('');
+  console.log("cleared");
+  DisablePOS();
+}
+function PlotPOSMarker(){
+
+   console.log(POSLati+' $ '+POSLong);
+   $('#PosMarkerBtn').click(function(){
+     var POSLati=$('input#POSLati').val();
+     var POSLong=$("input#POSLong").val();
+       var POSicon=L.icon({
+         iconUrl:"lib/images/pin-512.png",
+         iconSize:[40,40],
+         iconAnchor:[20,40]
+       });
+       var POSMarkerPoint=L.marker([POSLati, POSLong],{icon:POSicon});
+       POSMarkerPoint.bindPopup("<p>Lat:"+ POSLati +"<br>Lon: "+POSLong+"</p>");
+       POSMarkerPoint.addTo(map);
+       //map.fitBounds([POSLati, POSLong].getBounds());
+
+       map.flyTo([POSLati, POSLong],10);
+       console.log("Innerof"+POSLati+' $ '+POSLong);
+   });
+}
 $(document).ready(function(){
-  $('#AddMarker').click(function(){
-  $('#AddMarker').prop("checked",function(){
-    if(!$('#AddMarker').prop("checked")){
-      console.log("Enter");
-      $('#VMSMarkerDiv').hide();
-    }else {
-      $('#VMSMarkerDiv').show();
-    }
-    //$('#VMSMarkerDiv').toggle("display");
+  $("#LayerShape").on("change",function(){
+    LayerCorner=$("#LayerShape").val();
   });
-});
+      $('#AddMarker').click(function(){
+      $('#AddMarker').prop("checked",function(){
+        if(!$('#AddMarker').prop("checked")){
+          console.log("Enter");
+          $('#VMSMarkerDiv').hide();
+        }else {
+          $('#VMSMarkerDiv').show();
+        }
+        //$('#VMSMarkerDiv').toggle("display");
+      });
+    });
+
+
+    // CLEAR BUTTON ACTION
+    $('#clearBtn').click(function(){
+      $('input[type=radio]').prop("checked",false);
+      CLEARText();
+    });
+
+    $('input[type="radio"]').on("change",function(){
+      var RegularMarker=$("#AddMarker").prop("checked"),
+      VMSMarker=$("#VMSMarker").prop("checked"),
+      POSMarker=$("#AtPosMarker").prop("checked");
+
+      if(RegularMarker){
+        //console.log("RegularMarker");
+        DisablePOS();
+      }else if (VMSMarker) {
+        //console.log("VMSMarker");
+        DisablePOS();
+      }
+      else if (POSMarker) {
+        //console.log("POSMarker");
+          EnablePOS();
+          PlotPOSMarker();
+      }
+    });
+
 });
 
 
